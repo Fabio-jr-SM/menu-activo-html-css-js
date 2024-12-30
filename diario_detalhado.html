@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sigas</title>
+
+    <link rel="stylesheet" href="{% static '/css/main.css' %}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+
+    <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
+
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="main p-3">
+            <div class="container">
+                <h4>Diario detalhado</h4>
+                <a href="{% url 'app_sigas:diario' %}" class="btn btn-secondary mb-3"><i
+                        class="bi bi-arrow-left"></i></a>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Disciplina</th>
+                            <th scope="col">Curso</th>
+                            <th scope="col">Turno</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ disciplina.nome }}</td>
+                            <td>
+                                {{ disciplina.curso.nome }}
+                            </td>
+                            <td>{{ disciplina.turno }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+
+                <a class="btn btn-secondary" href="{% url 'app_sigas:registrar_aula' disciplina.id %}">Registrar
+                    aula</a>
+                <a class="btn btn-secondary m-3" style="width: 140px;"
+                    href="/pagina/diario/{{disciplina_id}}/registrarfalta/">Registrar Falta</a>
+                <button class="btn btn-secondary" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    Detalhes
+                </button>
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Registros de Aula</h5>
+                        <p class="card-text">Horário de Início: {{ registro.horario_inicio }}</p>
+                        <p class="card-text">Horário de Fim: {{ registro.horario_fim }}</p>
+                        <p class="card-text">Descrição: {{ registro.descricao }}</p>
+                        <!--Registrar faltas-->
+
+                        <!--BOTÃO DE DETALHES-->
+
+                        <!-- Conteúdo a ser Expandido/Retraído -->
+                        <div class="collapse" id="collapseExample">
+                            <div class="card card-body mt-3">
+                                <div class="container">
+                                    <h5>Detalhes</h5>
+                                    <a class="btn btn-secondary"
+                                        href="{% url 'app_sigas:registrar_atividade' registro_aula_id=registro.id disciplina_id=disciplina.id %}">
+                                        Registrar Atividade
+                                    </a>
+                                </div>
+
+                                <!--Detalhes da aula-->
+                                <h5 class="mt-5">Faltas</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Horário de Início</th>
+                                                <th>Horário de Fim</th>
+                                                <th>Faltas dos Alunos</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for aula in registros_aula %}
+                                            <tr>
+                                                <td>{{ aula.horario_inicio }}</td>
+                                                <td>{{ aula.horario_fim }}</td>
+                                                <td>
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Aluno</th>
+                                                                <th>Quantidade</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for falta in aula.registrofalta_set.all %}
+                                                            <tr>
+                                                                <td>{{ falta.aluno.pessoa.nome_completo }}</td>
+                                                                <td>{{ falta.quantidade_faltas }}</td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!--Detalhes das atividades-->
+                                <h5 class="mt-5">Atividades e notas</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Atividades Registradas</th>
+                                                <th>Notas dos Alunos</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for aula in registros_aula %}
+                                            <tr>
+                                                <td>
+                                                    <ul>
+                                                        {% for atividade in atividades %}
+                                                        <li>{{ atividade.descricao }}</li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </td>
+                                                <td>
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Aluno</th>
+                                                                <th>Nota</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for aluno in alunos %}
+                                                            <tr>
+                                                                <td>{{ aluno.pessoa.nome_completo }}</td>
+                                                                <td>
+                                                                    {% for nota in notas %}
+                                                                    {{ nota.nota }}
+                                                                    {% endfor %}
+                                                                </td>
+                                                            </tr>
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const hamBurger = document.querySelector(".toggle-btn");
+
+        hamBurger.addEventListener("click", function () {
+            document.querySelector("#sidebar").classList.toggle("expand");
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
